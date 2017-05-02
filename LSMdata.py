@@ -111,7 +111,8 @@ for d_direc in FFP:
     u_b0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f0.vec
 
     u_l0 = GridFunction(V) # Defective problem solution
-    u_l0.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f0.vec
+    with TaskManager():
+        u_l0.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f0.vec
         
     # Scattered field for the defect alone - To construct the FF operator in the LSM method
     Es0=GridFunction(Vext,"Es0")
@@ -125,7 +126,8 @@ for d_direc in FFP:
 
     # Define background solution functions for the rhs of the FF equation
     u_rhs0 = GridFunction(V)#Layer Solution
-    u_rhs0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm0.vec
+    with TaskManager():
+        u_rhs0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm0.vec
     u_RHS0 = CoefficientFunction(u_rhs0.components[1])#to be able to evaluate at sample points in SSpoints
 
     if (plot_id ==1):
@@ -149,11 +151,13 @@ for d_direc in FFP:
 
     # Define solution functions
     u_b1 = GridFunction(V)# Background problem solution
-    u_b1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f1.vec
+    with TaskManager():
+        u_b1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f1.vec
 
     # Define solution functions
     u_l1 = GridFunction(V)# Defective problem solution
-    u_l1.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f1.vec
+    with TaskManager():
+        u_l1.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f1.vec
 
     # Scattered field for the defect alone - To construct the FF operator in the LSM method               
     Es1=GridFunction(Vext,"Es0")
@@ -166,7 +170,8 @@ for d_direc in FFP:
 
     # Define background solution functions for the rhs
     u_rhs1 = GridFunction(V)#Layer Solution
-    u_rhs1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm.vec
+    with TaskManager():
+        u_rhs1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm.vec
     u_RHS1 = CoefficientFunction(u_rhs1.components[1])#to be able to evaluate at sample points in SSpoints
 
     if (plot_id ==1):

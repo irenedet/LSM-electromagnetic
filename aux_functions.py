@@ -33,8 +33,8 @@ def Nitsches_transmission(alpha_pml,Rpml,nu,eps,k,mu2,nv,mesh,V,gamma,hmax):
     a += SymbolicBFI(0.5*( (1./mu2)*curl(uplus).Trace() + curl(uext).Trace()) * Cross(nv,vext.Trace()-vplus.Trace() ) ,BND,definedon=mesh.Boundaries("interface"))
     a += SymbolicBFI( Cross(nv,uext.Trace()-uplus.Trace()) * 0.5*( (1./mu2)*curl(vplus).Trace() + curl(vext).Trace() ) ,BND,definedon=mesh.Boundaries("interface"))
     a += SymbolicBFI( gamma/hmax*k* (uext.Trace() - uplus.Trace()) * (vext.Trace() - vplus.Trace()),BND,definedon=mesh.Boundaries("interface"))
-
-    a.Assemble()
+    with TaskManager():
+        a.Assemble()
     return a
 
 def NitschesPlaneWaveSource(k,dv,pv,nv,mesh,Vext,V,gamma,hmax,mu2):
@@ -49,7 +49,9 @@ def NitschesPlaneWaveSource(k,dv,pv,nv,mesh,Vext,V,gamma,hmax,mu2):
     f += SymbolicLFI( curlEin * 0.5 * (Cross(nv,vplus.Trace() + vext.Trace() )),BND,definedon=mesh.Boundaries("interface"))
     f += SymbolicLFI(Ein * 0.5*Cross(nv,(1./mu2)*curl(vplus).Trace()+curl(vext).Trace() ),BND,definedon=mesh.Boundaries("interface"))
     f += SymbolicLFI(-gamma/hmax*k* Ein * (vext.Trace()-vplus.Trace()),BND,definedon=mesh.Boundaries("interface"))
-    f.Assemble()
+    with TaskManager():
+        f.Assemble()
+    
     return f, Einext
 
 def Sample_Points(ngmesh,mesh,data_dir,Rminus):
