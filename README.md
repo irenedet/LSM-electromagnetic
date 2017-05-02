@@ -13,6 +13,7 @@ A_d is the farfield matrix of the material to be tested (possibly defective).
 2) b is the far field pattern of the Green's function associated to the background media.
 
 This project consists of the following files:
+
 0) simpleLSM.m
 
 1) readff.m : is a Matlab code that reads the electromagnetic farfield information computed by the finite element 
