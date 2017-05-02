@@ -13,11 +13,6 @@ from parameters import *
 ################################################################################################################
 #      Definition of the geometry
 ################################################################################################################
-
-if geom == 0: #test
-    geometry = brick2_geometry(Rminus, Rplus, Rext, Rpml, delta, hsample, hmax)
-    ngmesh = geometry.GenerateMesh()
-
 if geom == 1:
     geometry = brick_geometry(Rminus, Rplus, Rext, Rpml, delta, hsample, hmax)
     ngmesh = geometry.GenerateMesh()
@@ -110,31 +105,31 @@ for d_direc in FFP:
     pv0,pv1 = Get_polarizations(dv,FFpoints,np,FFP)
 
     # Incident field for the first polarization pv0
-    f, Einext = NitschesPlaneWaveSource(k,dv,pv0,nv,mesh,Vext,V,gamma,hmax,mu2)
+    f0, Einext0 = NitschesPlaneWaveSource(k,dv,pv0,nv,mesh,Vext,V,gamma,hmax,mu2)
     # Define solution functions
     u_b0 = GridFunction(V) # Background problem solution
-    u_b0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f.vec
+    u_b0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f0.vec
 
     u_l0 = GridFunction(V) # Defective problem solution
-    u_l0.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f.vec
+    u_l0.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f0.vec
         
     # Scattered field for the defect alone - To construct the FF operator in the LSM method
     Es0=GridFunction(Vext,"Es0")
     Es0.Set(u_l0.components[0]-u_b0.components[0]) 
         
     if (plot_id ==1):        
-        Draw(CoefficientFunction(u_l0.components[1])+nopml*CoefficientFunction(u_l0.components[0])+nopml*Einext,mesh,"E_l0")
+        Draw(CoefficientFunction(u_l0.components[1])+nopml*CoefficientFunction(u_l0.components[0])+nopml*Einext0,mesh,"E_l0")
 
     # Incident field for dvm = -dv and the first polarization pv0 (to compute the RHS of the FF equation)
-    fm, Einextm = NitschesPlaneWaveSource(k,dvm,pv0,nv,mesh,Vext,V,gamma,hmax,mu2)
+    fm0, Einextm0 = NitschesPlaneWaveSource(k,dvm,pv0,nv,mesh,Vext,V,gamma,hmax,mu2)
 
     # Define background solution functions for the rhs of the FF equation
     u_rhs0 = GridFunction(V)#Layer Solution
-    u_rhs0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm.vec
+    u_rhs0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm0.vec
     u_RHS0 = CoefficientFunction(u_rhs0.components[1])#to be able to evaluate at sample points in SSpoints
 
     if (plot_id ==1):
-        Draw(CoefficientFunction(u_rhs0.components[1])+nopml*CoefficientFunction(u_rhs0.components[0])+nopml*Einextm,mesh,"E_rhs0")
+        Draw(CoefficientFunction(u_rhs0.components[1])+nopml*CoefficientFunction(u_rhs0.components[0])+nopml*Einextm0,mesh,"E_rhs0")
     
     print(np,0, file=rhs)
     print(dv[0], dv[1], dv[2], file=rhs)
@@ -150,24 +145,24 @@ for d_direc in FFP:
     # Second polarization
         
     # Incident field for dv and the second polarization pv1
-    f, Einext = NitschesPlaneWaveSource(k,dv,pv1,nv,mesh,Vext,V,gamma,hmax,mu2)
+    f1, Einext1 = NitschesPlaneWaveSource(k,dv,pv1,nv,mesh,Vext,V,gamma,hmax,mu2)
 
     # Define solution functions
     u_b1 = GridFunction(V)# Background problem solution
-    u_b1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f.vec
+    u_b1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f1.vec
 
     # Define solution functions
     u_l1 = GridFunction(V)# Defective problem solution
-    u_l1.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f.vec
+    u_l1.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f1.vec
 
     # Scattered field for the defect alone - To construct the FF operator in the LSM method               
     Es1=GridFunction(Vext,"Es0")
     Es1.Set(u_l1.components[0]-u_b1.components[0])
     if (plot_id ==1):
-        Draw(CoefficientFunction(u_l1.components[1])+nopml*CoefficientFunction(u_l1.components[0])+nopml*Einext,mesh,"E_l1")
+        Draw(CoefficientFunction(u_l1.components[1])+nopml*CoefficientFunction(u_l1.components[0])+nopml*Einext1,mesh,"E_l1")
 
     # Incident field for dvm = -dv and the second polarization pv1 (to compute the RHS of the FF equation)
-    fm, Einextm = NitschesPlaneWaveSource(k,dvm,pv1,nv,mesh,Vext,V,gamma,hmax,mu2)
+    fm1, Einextm1 = NitschesPlaneWaveSource(k,dvm,pv1,nv,mesh,Vext,V,gamma,hmax,mu2)
 
     # Define background solution functions for the rhs
     u_rhs1 = GridFunction(V)#Layer Solution
@@ -175,7 +170,7 @@ for d_direc in FFP:
     u_RHS1 = CoefficientFunction(u_rhs1.components[1])#to be able to evaluate at sample points in SSpoints
 
     if (plot_id ==1):
-        Draw(CoefficientFunction(u_rhs1.components[1])+nopml*CoefficientFunction(u_rhs1.components[0])+nopml*Einextm,mesh,"E_rhs1")
+        Draw(CoefficientFunction(u_rhs1.components[1])+nopml*CoefficientFunction(u_rhs1.components[0])+nopml*Einextm1,mesh,"E_rhs1")
     Redraw()
     print(np,1, file=rhs)
     print(dv[0], dv[1], dv[2], file=rhs)
