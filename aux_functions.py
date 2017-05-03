@@ -17,11 +17,8 @@ def materials(mu1,mu2,mu0,eps1,eps2,eps0,mesh):
     epsilon = CoefficientFunction ([ epsilonr[mat] for mat in mesh.GetMaterials() ])
     return nu, epsilon
 
-def Nitsches_transmission(alpha_pml,Rpml,nu,eps,k,mu2,nv,mesh,V,gamma,hmax):
+def Nitsches_transmission(alpha_pml,Rpml,nu,eps,k,mu2,nv,mesh,V,gamma,hmax,uext,uplus,vext,vplus):
     # u and v refer to trial and test-functions in the definition of forms below
-    uext,uplus = V.TrialFunction()
-    vext,vplus = V.TestFunction()
-
     SetPMLParameters(rad=Rpml,alpha=alpha_pml)
     a = BilinearForm(V, symmetric=True, flags={"printelmat":True})
     a.components[0] += BFI("PML_curlcurledge",coef=nu)
@@ -37,14 +34,13 @@ def Nitsches_transmission(alpha_pml,Rpml,nu,eps,k,mu2,nv,mesh,V,gamma,hmax):
         a.Assemble()
     return a
 
-def NitschesPlaneWaveSource(k,dv,pv,nv,mesh,Vext,V,gamma,hmax,mu2):
+def NitschesPlaneWaveSource(k,dv,pv,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus):
     #Incident field
     Ein= exp(k*1J*(dv[0]*x+dv[1]*y+dv[2]*z))*CoefficientFunction(pv)
     Einext=GridFunction(Vext,"gEin")
     Einext.Set(Ein)
     curlEin = k*1.J*Cross(dv,pv)*exp(k*1.J*(dv[0]*x+dv[1]*y+dv[2]*z))
 
-    vext,vplus = V.TestFunction()
     f = LinearForm(V)
     f += SymbolicLFI( curlEin * 0.5 * (Cross(nv,vplus.Trace() + vext.Trace() )),BND,definedon=mesh.Boundaries("interface"))
     f += SymbolicLFI(Ein * 0.5*Cross(nv,(1./mu2)*curl(vplus).Trace()+curl(vext).Trace() ),BND,definedon=mesh.Boundaries("interface"))

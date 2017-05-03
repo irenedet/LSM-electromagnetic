@@ -56,6 +56,10 @@ Vext = HCurl(mesh, order=2, complex=True, definedon=mesh.Materials("air")+mesh.M
 Vplus  = HCurl(mesh, order=2, complex=True, definedon=mesh.Materials("oplus")+mesh.Materials("olayer")+mesh.Materials("ominus"))
 V=FESpace([Vext,Vplus])
 
+# Define test and trial functions
+uext,uplus = V.TrialFunction()
+vext,vplus = V.TestFunction()
+
 ################################################################################################################
 #     Sesquilinear forms & assemblement of the FEM matrix using a Nitsche's method on the 
 #     exterior boundary of the inhomogeneity ("interface").
@@ -65,8 +69,8 @@ nu_b, eps_b = materials(mu1,mu2,mu2,eps1,eps2,eps2,mesh) #Background media mater
 nu_l, eps_l = materials(mu1,mu2,mu0,eps1,eps2,eps0,mesh) #Defective media material functions
 
 # FEM Matrices
-a_b = Nitsches_transmission(alpha_pml,Rpml,nu_b,eps_b,k,mu2,nv,mesh,V,gamma,hmax) #Background domain
-a_l = Nitsches_transmission(alpha_pml,Rpml,nu_l,eps_l,k,mu2,nv,mesh,V,gamma,hmax) #Defective domain
+a_b = Nitsches_transmission(alpha_pml,Rpml,nu_b,eps_b,k,mu2,nv,mesh,V,gamma,hmax,uext,uplus,vext,vplus) #Background domain
+a_l = Nitsches_transmission(alpha_pml,Rpml,nu_l,eps_l,k,mu2,nv,mesh,V,gamma,hmax,uext,uplus,vext,vplus) #Defective domain
 
 #################################################################################################################
 #    Data for the LSM (Linear Sampling Method) : Far-field data and right-hand-side computation
@@ -105,7 +109,7 @@ for d_direc in FFP:
     pv0,pv1 = Get_polarizations(dv,FFpoints,np,FFP)
 
     # Incident field for the first polarization pv0
-    f0, Einext0 = NitschesPlaneWaveSource(k,dv,pv0,nv,mesh,Vext,V,gamma,hmax,mu2)
+    f0, Einext0 = NitschesPlaneWaveSource(k,dv,pv0,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
     # Define solution functions
     u_b0 = GridFunction(V) # Background problem solution
     u_b0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f0.vec
@@ -122,7 +126,7 @@ for d_direc in FFP:
         Draw(CoefficientFunction(u_l0.components[1])+nopml*CoefficientFunction(u_l0.components[0])+nopml*Einext0,mesh,"E_l0")
 
     # Incident field for dvm = -dv and the first polarization pv0 (to compute the RHS of the FF equation)
-    fm0, Einextm0 = NitschesPlaneWaveSource(k,dvm,pv0,nv,mesh,Vext,V,gamma,hmax,mu2)
+    fm0, Einextm0 = NitschesPlaneWaveSource(k,dvm,pv0,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
 
     # Define background solution functions for the rhs of the FF equation
     u_rhs0 = GridFunction(V)#Layer Solution
@@ -147,7 +151,7 @@ for d_direc in FFP:
     # Second polarization
         
     # Incident field for dv and the second polarization pv1
-    f1, Einext1 = NitschesPlaneWaveSource(k,dv,pv1,nv,mesh,Vext,V,gamma,hmax,mu2)
+    f1, Einext1 = NitschesPlaneWaveSource(k,dv,pv1,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
 
     # Define solution functions
     u_b1 = GridFunction(V)# Background problem solution
@@ -166,7 +170,7 @@ for d_direc in FFP:
         Draw(CoefficientFunction(u_l1.components[1])+nopml*CoefficientFunction(u_l1.components[0])+nopml*Einext1,mesh,"E_l1")
 
     # Incident field for dvm = -dv and the second polarization pv1 (to compute the RHS of the FF equation)
-    fm1, Einextm1 = NitschesPlaneWaveSource(k,dvm,pv1,nv,mesh,Vext,V,gamma,hmax,mu2)
+    fm1, Einextm1 = NitschesPlaneWaveSource(k,dvm,pv1,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
 
     # Define background solution functions for the rhs
     u_rhs1 = GridFunction(V)#Layer Solution
