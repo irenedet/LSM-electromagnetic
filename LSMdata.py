@@ -171,7 +171,7 @@ for d_direc in FFP:
     # Define background solution functions for the rhs
     u_rhs1 = GridFunction(V)#Layer Solution
     with TaskManager():
-        u_rhs1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm.vec
+        u_rhs1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm1.vec
     u_RHS1 = CoefficientFunction(u_rhs1.components[1])#to be able to evaluate at sample points in SSpoints
 
     if (plot_id ==1):
