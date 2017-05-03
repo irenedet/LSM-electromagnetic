@@ -40,5 +40,5 @@ FFh=0.4
 data_dir='Data_'+str(k)+'_'+str(eps0)
 
 # Visualization parameters 
-plot_id = 1 # 1 = to plot the solutions
+plot_id = 0 # 1 = to plot the solutions
 

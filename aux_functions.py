@@ -37,8 +37,6 @@ def Nitsches_transmission(alpha_pml,Rpml,nu,eps,k,mu2,nv,mesh,V,gamma,hmax,uext,
 def NitschesPlaneWaveSource(k,dv,pv,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus):
     #Incident field
     Ein= exp(k*1J*(dv[0]*x+dv[1]*y+dv[2]*z))*CoefficientFunction(pv)
-    Einext=GridFunction(Vext,"gEin")
-    Einext.Set(Ein)
     curlEin = k*1.J*Cross(dv,pv)*exp(k*1.J*(dv[0]*x+dv[1]*y+dv[2]*z))
 
     f = LinearForm(V)
@@ -48,7 +46,7 @@ def NitschesPlaneWaveSource(k,dv,pv,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus):
     with TaskManager():
         f.Assemble()
     
-    return f, Einext
+    return f, Ein
 
 def Sample_Points(ngmesh,mesh,data_dir,Rminus):
     #Sampling points for the LSM

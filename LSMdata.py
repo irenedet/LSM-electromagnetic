@@ -103,13 +103,15 @@ print(eps0,file=fff)
 print(delta,file=fff)
 rhs=open(data_dir+'/RHS.txt','w')
 print(Nsample,file=rhs)
+Einext=GridFunction(Vext,"gEin")
 for d_direc in FFP:
     dv=d_direc.p
     dvm = (-dv[0],-dv[1],-dv[2]) #necessary to later compute RHS of the FF equation
     pv0,pv1 = Get_polarizations(dv,FFpoints,np,FFP)
 
     # Incident field for the first polarization pv0
-    f0, Einext0 = NitschesPlaneWaveSource(k,dv,pv0,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
+    f0, Ein0 = NitschesPlaneWaveSource(k,dv,pv0,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
+    Einext.Set(Ein0)
     # Define solution functions
     u_b0 = GridFunction(V) # Background problem solution
     u_b0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f0.vec
@@ -123,11 +125,11 @@ for d_direc in FFP:
     Es0.Set(u_l0.components[0]-u_b0.components[0]) 
         
     if (plot_id ==1):        
-        Draw(CoefficientFunction(u_l0.components[1])+nopml*CoefficientFunction(u_l0.components[0])+nopml*Einext0,mesh,"E_l0")
+        Draw(CoefficientFunction(u_l0.components[1])+nopml*CoefficientFunction(u_l0.components[0])+nopml*Einext,mesh,"E_l0")
 
     # Incident field for dvm = -dv and the first polarization pv0 (to compute the RHS of the FF equation)
-    fm0, Einextm0 = NitschesPlaneWaveSource(k,dvm,pv0,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
-
+    fm0, Einm0 = NitschesPlaneWaveSource(k,dvm,pv0,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
+    Einext.Set(Einm0)
     # Define background solution functions for the rhs of the FF equation
     u_rhs0 = GridFunction(V)#Layer Solution
     with TaskManager():
@@ -151,8 +153,8 @@ for d_direc in FFP:
     # Second polarization
         
     # Incident field for dv and the second polarization pv1
-    f1, Einext1 = NitschesPlaneWaveSource(k,dv,pv1,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
-
+    f1, Ein1 = NitschesPlaneWaveSource(k,dv,pv1,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
+    Einext.Set(Ein1)
     # Define solution functions
     u_b1 = GridFunction(V)# Background problem solution
     with TaskManager():
@@ -170,7 +172,8 @@ for d_direc in FFP:
         Draw(CoefficientFunction(u_l1.components[1])+nopml*CoefficientFunction(u_l1.components[0])+nopml*Einext1,mesh,"E_l1")
 
     # Incident field for dvm = -dv and the second polarization pv1 (to compute the RHS of the FF equation)
-    fm1, Einextm1 = NitschesPlaneWaveSource(k,dvm,pv1,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
+    fm1, Einm1 = NitschesPlaneWaveSource(k,dvm,pv1,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
+    Einext.Set(Einm1)
 
     # Define background solution functions for the rhs
     u_rhs1 = GridFunction(V)#Layer Solution
