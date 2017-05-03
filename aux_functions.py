@@ -101,9 +101,9 @@ def Get_polarizations1(dv):
     pv1=(pv1[0]/npv ,pv1[1]/npv, pv1[2]/npv)
     return pv0,pv1
 
-def Get_polarizations(dv,N):
-    dvp1=FFpoints[(np+1)%N] # just to obtain a non-colinear
-         # direction (this fails if FFpoints[(np+1)%len(FFP)]=-dv)
+def Get_polarizations(dv,np,FFpoints,FFP):
+    dvp1=FFpoints[(np+1)%len(FFP)] # just to obtain a non-colinear
+    # direction (this fails if FFpoints[(np+1)%len(FFP)]=-dv)
     pv0=Ocross(dv,dvp1)
     npv=sqrt(pv0[0]**2+pv0[1]**2+pv0[2]**2)
     if abs(npv)==0:

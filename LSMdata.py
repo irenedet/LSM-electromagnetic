@@ -87,7 +87,6 @@ ffnetgenMesh = ffgeometry.GenerateMesh(maxh=FFh)
 FFP,bfaces,FFpoints = SetupFFMesh(ffnetgenMesh)
 ExportFFMesh(FFP,bfaces,data_dir+'/ffmesh.msh')
 ffnetgenMesh.Save(data_dir+'/ffmesh.vol') # save for imepdance calculation
-N=len(FFP)
 ## Set sampling points for the LSM
 Nsample,SSpoints,SSpointsp = Sample_Points(ngmesh,mesh,data_dir,Rminus) 
 
@@ -113,7 +112,7 @@ for d_direc in FFP:
     dvm = (-dv[0],-dv[1],-dv[2]) #necessary to later compute RHS of the FF equation
     ndv=sqrt(dv[0]**2+dv[1]**2+dv[2]**2)
     if ndv>1.-0.00001:    
-        pv0,pv1 = Get_polarizations(dv,N)
+        pv0,pv1 = Get_polarizations(dv,np,FFpoints,FFP)
 
         #Definition of GridFunctions for ff computation
         u_b0 = GridFunction(V)
