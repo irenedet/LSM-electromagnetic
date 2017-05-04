@@ -99,11 +99,11 @@ nopml = CoefficientFunction ([0 if mat=='pml' else 1 for mat in mesh.GetMaterial
 ##################################################################################################################
 
 np=0
-#fff=open(data_dir+'/FFP.txt','w')
-#print(k,file=fff)
-#print(eps0,file=fff)
-#print(delta,file=fff)
-#collection='interface'
+fff=open(data_dir+'/FFP.txt','w')
+print(k,file=fff)
+print(eps0,file=fff)
+print(delta,file=fff)
+collection='interface'
 rhs=open(data_dir+'/RHS.txt','w')
 print(Nsample,file=rhs)
 
@@ -154,17 +154,17 @@ for d_direc in FFP:
             Draw(CoefficientFunction(u_rhs1.components[1]) +nopml*CoefficientFunction(u_rhs1.components[0])+nopml*Einextm1,mesh,"E_rhs1")
             Redraw()
 ################## FFcomputation #####################
-        #print('starting ffvec')
-        #FF0=findffvec(k,FFP,Es0,order,mesh,nv,collection,Vext)
-        #FF1=findffvec(k,FFP,Es1,order,mesh,nv,collection,Vext)
-        #print("done")
-        ##xxx  # stop
-        #write_in_fff(np,fff,dv,0,pv0,FF0)
-        #write_in_fff(np,fff,dv,1,pv1,FF1)
+        print('starting ffvec')
+        FF0=findffvec(k,FFP,Es0,order,mesh,nv,collection,Vext)
+        FF1=findffvec(k,FFP,Es1,order,mesh,nv,collection,Vext)
+        print("done")
+        #xxx  # stop
+        write_in_fff(np,fff,dv,0,pv0,FF0)
+        write_in_fff(np,fff,dv,1,pv1,FF1)
         np=np+1
         print('MS: Done ',np,' incident fields out of ',len(FFP))
 rhs.close()
-#fff.close()
+fff.close()
 
 if (plot_id ==1):
     viewoptions.clipping.enable = 1
