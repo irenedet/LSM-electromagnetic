@@ -161,8 +161,8 @@ for d_direc in FFP:
         ##xxx  # stop
         #write_in_fff(np,fff,dv,0,pv0,FF0)
         #write_in_fff(np,fff,dv,1,pv1,FF1)
-        #np=np+1
-        #print('MS: Done ',np,' incident fields out of ',len(FFP))
+        np=np+1
+        print('MS: Done ',np,' incident fields out of ',len(FFP))
 rhs.close()
 #fff.close()
 
