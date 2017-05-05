@@ -111,7 +111,7 @@ for d_direc in FFP:
     dv=d_direc.p
     dvm = (-dv[0],-dv[1],-dv[2]) #necessary to later compute RHS of the FF equation
     ndv=sqrt(dv[0]**2+dv[1]**2+dv[2]**2)
-    if ndv>1.-0.00001:    
+    if (ndv>1.-0.00001)&(np == 0):    
         pv0,pv1 = Get_polarizations(dv,np,FFpoints,FFP)
 
         #Definition of GridFunctions for ff computation
@@ -122,7 +122,7 @@ for d_direc in FFP:
         # Define solution functions
         u_b1 = GridFunction(V)# Background problem solution
         u_l1 = GridFunction(V)
-        Es1=GridFunction(Vext,"Es0")
+        Es1 = GridFunction(Vext,"Es1")
 
         #Definition of GridFunctions for rhs evaluation
         u_rhs0 = GridFunction(V)
@@ -150,17 +150,19 @@ for d_direc in FFP:
         write_in_rhs(np,rhs,dv,pv0,0,SSpoints,u_RHS0)
         write_in_rhs(np,rhs,dv,pv1,1,SSpoints,u_RHS1)
 
-        if (plot_id ==1):
+        if (plot_id == 1):
             Draw(CoefficientFunction(u_rhs1.components[1]) +nopml*CoefficientFunction(u_rhs1.components[0])+nopml*Einextm1,mesh,"E_rhs1")
+            Draw(CoefficientFunction(u_b0.components[1]) +nopml*CoefficientFunction(u_b0.components[0])+nopml*Einext0,mesh,"u_b0")
+            Draw(CoefficientFunction(Es0),mesh,"Es0")
             Redraw()
 ################## FFcomputation #####################
-        print('starting ffvec')
-        FF0=findffvec(k,FFP,Es0,order,mesh,nv,collection,Vext)
-        FF1=findffvec(k,FFP,Es1,order,mesh,nv,collection,Vext)
-        print("done")
+        #print('starting ffvec')
+        #FF0=findffvec(k,FFP,Es0,order,mesh,nv,collection,Vext)
+        #FF1=findffvec(k,FFP,Es1,order,mesh,nv,collection,Vext)
+        #print("done")
         #xxx  # stop
-        write_in_fff(np,fff,dv,0,pv0,FF0)
-        write_in_fff(np,fff,dv,1,pv1,FF1)
+        #write_in_fff(np,fff,dv,0,pv0,FF0)
+        #write_in_fff(np,fff,dv,1,pv1,FF1)
         np=np+1
         print('MS: Done ',np,' incident fields out of ',len(FFP))
 rhs.close()

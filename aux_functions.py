@@ -10,10 +10,10 @@ Ocross=lambda a,b: (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-b[0]*a[1])
 
 def materials(mu1,mu2,mu0,eps1,eps2,eps0,mesh):
 #Material properties for the BACKGROUND
-    mur = {"ominus" : mu1 , "oplus" : mu2 , "olayer" : mu2 , "air" : 1, "pml" : 1 }
+    mur = {"ominus" : mu1 , "oplus" : mu2 , "olayer" : mu0 , "air" : 1, "pml" : 1 }
     nu = CoefficientFunction ([ 1/(mur[mat]) for mat in mesh.GetMaterials() ])
 
-    epsilonr = {"ominus" : eps1 , "oplus" : eps2 , "olayer" : eps2 , "air" : 1, "pml" : 1 }
+    epsilonr = {"ominus" : eps1 , "oplus" : eps2 , "olayer" : eps0 , "air" : 1, "pml" : 1 }
     epsilon = CoefficientFunction ([ epsilonr[mat] for mat in mesh.GetMaterials() ])
     return nu,epsilon
 
