@@ -24,7 +24,7 @@ def brick_geometry(Rminus, Rplus, Rext, Rpml, delta, hsample, hmax):
     pl1 = Plane(Pnt(0,0,Rminus),Vec(0,0,-1)).bc("crack")
     pl2 = Plane(Pnt(0,0,Rminus+delta),Vec(0,0,1))#.bc("top")
     
-    geometry.Add ((box - pl1).mat("ominus"),bcmod=[(o_minus,"nocrack")])    
+    geometry.Add ((box - pl1).mat("ominus"))    
     geometry.Add ((o_ext - pml).mat("pml"))
     geometry.Add ((pml-o_plus).mat("air"))
     geometry.Add ((o_plus-box).mat("oplus").maxh(hmax))
