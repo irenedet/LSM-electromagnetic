@@ -22,9 +22,9 @@ mu2 = 1. #mu in oplus
 mu1 = 1 #1.5 #mu in ominus
 mu0 = 1 #2 #mu in the layer
 
-eps2 = 2 #+ 1J*1.01 #epsilon in oplus
-eps1 = 3 #2.  + 1J*2.01 #epsilon in ominus
-eps0 = 3 # + 1J*3.51 #epsilon in the layer
+eps2 = 1 + 1J*1.01 #epsilon in oplus
+eps1 = 3.5 + 1J*3.51#2 + 1J*2.01 #epsilon in ominus
+eps0 = 3.5 + 1J*3.51 #epsilon in the layer
 
 #Nitsche's parameter
 gamma=-1.e3*1J#check this

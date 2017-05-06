@@ -67,6 +67,7 @@ vext,vplus = V.TestFunction()
 nu_b, eps_b = materials(mu1,mu2,mu2,eps1,eps2,eps2,mesh) #Background media material functions
 nu_l, eps_l = materials(mu1,mu2,mu0,eps1,eps2,eps0,mesh) #Defective media material functions
 
+
 # FEM Matrices
 a_b = Nitsches_transmission(alpha_pml,Rpml,nu_b,eps_b,k,mu2,nv,mesh,V,gamma,hmax,uext,uplus,vext,vplus) #Background domain
 a_l = Nitsches_transmission(alpha_pml,Rpml,nu_l,eps_l,k,mu2,nv,mesh,V,gamma,hmax,uext,uplus,vext,vplus) #Defective domain
@@ -153,6 +154,7 @@ for d_direc in FFP:
         if (plot_id == 1):
             Draw(CoefficientFunction(u_rhs1.components[1]) +nopml*CoefficientFunction(u_rhs1.components[0])+nopml*Einextm1,mesh,"E_rhs1")
             Draw(CoefficientFunction(u_b0.components[1]) +nopml*CoefficientFunction(u_b0.components[0])+nopml*Einext0,mesh,"u_b0")
+            Draw(CoefficientFunction(u_l0.components[1]) +nopml*CoefficientFunction(u_l0.components[0])+nopml*Einext0,mesh,"u_l0")
             Draw(CoefficientFunction(Es0),mesh,"Es0")
             Redraw()
 ################## FFcomputation #####################
