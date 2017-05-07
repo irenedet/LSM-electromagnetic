@@ -4,8 +4,9 @@
 %clear all
 %close all
 % Read data from FFP.txt to build prediction matrix
-% ||Ax-b||^2 + alpha ||x||^2
-[Points,npoints,tris,ntris,indexes,dv,pv,nb,ka,FFmat]=readff(1);
+data_folder = 'Data_3.0_3'
+[Points,npoints,tris,ntris,indexes,dv,pv,nb,ka,FFmat]=...
+    readff(1,data_folder);
 
 A=zeros(2*nb,2*nb);
 b=zeros(2*nb,1);
@@ -45,7 +46,7 @@ noise=norm(Noise_mat)/norm(A);
 disp(['The level of noise in this experiment is: ',num2str(100*noise),'%'])
 A=Anoisy;
 %% 3. Assemble right-hand-side 
-[SSpoints,Nsample,RHSmat]=readrhs(1,nb,folder_rhs);
+[SSpoints,Nsample,RHSmat]=readrhs(1,nb,data_folder);
 disp(['Using ',num2str(Nsample),' sampling points in each direction'])
 xx=SSpoints(1,:);
 yy=SSpoints(2,:);
@@ -78,7 +79,18 @@ for j=1:Nsample
         indicator(:,j)=[1,0,0]';
     end
 end
-S=10*ones(1,Nsample);
+
+S=5*ones(1,Nsample);
+figure
+s=1.2;
+x=[0 1 1 0 0 0;1 1 0 0 1 1;1 1 0 0 1 1;0 1 1 0 0 0]*s;
+y=[0 0 1 1 0 0;0 1 1 0 0 0;0 1 1 0 1 1;0 0 1 1 1 1]*s;
+z=[0 0 0 0 0 1;0 0 0 0 0 1;1 1 1 1 0 1;1 1 1 1 0 1]*s;
+for i=1:6
+    h=patch(x(:,i)-0.6,y(:,i)-0.6,z(:,i)-0.6,'k');
+    set(h,'edgecolor','b','FaceColor',[.1,.1,.3])
+end
+hold on
 scatter3(xx,yy,zz,S,indicator');
 %% Plotting the delamination (defective points)
 %h=patch(x(:,i),y(:,i),z(:,i),'k')
@@ -89,7 +101,7 @@ y=[0 0 1 1 0 0;0 1 1 0 0 0;0 1 1 0 1 1;0 0 1 1 1 1]*s;
 z=[0 0 0 0 0 1;0 0 0 0 0 1;1 1 1 1 0 1;1 1 1 1 0 1]*s;
 for i=1:6
     h=patch(x(:,i)-0.6,y(:,i)-0.6,z(:,i)-0.6,'k');
-    set(h,'edgecolor','b','FaceColor',[.3,.5,.3])
+    set(h,'edgecolor','b','FaceColor',[.1,.1,.3])
 end
 l=0.6*ones(1,Nsample);
 nosidex1=SSpoints(1,:)-l;nosidex2=SSpoints(1,:)+l;
@@ -115,12 +127,34 @@ ginvy1=zeros(size(Sidey1));ginvy1(2,:)=50*ginv(sidey1);Ginvy1=Sidey1+ginvy1;
 ginvy2=zeros(size(Sidey2));ginvy2(2,:)=50*ginv(sidey2);Ginvy2=Sidey2-ginvy2;
 ginvz1=zeros(size(Sidez1));ginvz1(3,:)=50*ginv(sidez1);Ginvz1=Sidez1+ginvz1;
 ginvz2=zeros(size(Sidez2));ginvz2(3,:)=50*ginv(sidez2);Ginvz2=Sidez2-ginvz2;
-scatter3(Ginvx1(1,:),Ginvx1(2,:),Ginvx1(3,:),'b');
-scatter3(Ginvx2(1,:),Ginvx2(2,:),Ginvx2(3,:),'b');
-scatter3(Ginvy1(1,:),Ginvy1(2,:),Ginvy1(3,:),'b');
-scatter3(Ginvy2(1,:),Ginvy2(2,:),Ginvy2(3,:),'b');
-scatter3(Ginvz1(1,:),Ginvz1(2,:),Ginvz1(3,:),'red');
-scatter3(Ginvz2(1,:),Ginvz2(2,:),Ginvz2(3,:),'b');
+scatter3(Ginvx1(1,:),Ginvx1(2,:),Ginvx1(3,:),S(1:length(Ginvx1)),'b');
+scatter3(Ginvx2(1,:),Ginvx2(2,:),Ginvx2(3,:),S(1:length(Ginvx2)),'b');
+scatter3(Ginvy1(1,:),Ginvy1(2,:),Ginvy1(3,:),S(1:length(Ginvy1)),'b');
+scatter3(Ginvy2(1,:),Ginvy2(2,:),Ginvy2(3,:),S(1:length(Ginvy2)),'b');
+scatter3(Ginvz1(1,:),Ginvz1(2,:),Ginvz1(3,:),S(1:length(Ginvz1)),'red');
+scatter3(Ginvz2(1,:),Ginvz2(2,:),Ginvz2(3,:),S(1:length(Ginvz2)),'b');
+%% Prueba
+%figure
+%surface(Ginvz1(1,:),Ginvz1(2,:),Ginvz1(3,:),'red');
+x = Ginvz1(1,:);
+y = Ginvz1(2,:);
+%z = 0.6*ones(length(Ginvz1(3,:)));
+v = Ginvz1(3,:);
+d = -0.6:0.05:0.6;
+[xq,yq] = meshgrid(d,d);
+vq = griddata(x,y,v,xq,yq);
+plot3(x,y,v,'ro')
+hold on
+surf(xq,yq,vq)
+
+s=1.2;
+x=[0 1 1 0 0 0;1 1 0 0 1 1;1 1 0 0 1 1;0 1 1 0 0 0]*s;
+y=[0 0 1 1 0 0;0 1 1 0 0 0;0 1 1 0 1 1;0 0 1 1 1 1]*s;
+z=[0 0 0 0 0 1;0 0 0 0 0 1;1 1 1 1 0 1;1 1 1 1 0 1]*s;
+for i=1:6
+    h=patch(x(:,i)-0.6,y(:,i)-0.6,z(:,i)-0.6,'k');
+    set(h,'edgecolor','b','FaceColor',[.1,.1,.3])
+end
 %% !!!!
 % Lots of test points
 nxx=41;
