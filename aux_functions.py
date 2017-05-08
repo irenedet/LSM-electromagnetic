@@ -9,7 +9,6 @@ Cross = lambda u,v: CoefficientFunction((u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2]
 Ocross=lambda a,b: (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-b[0]*a[1]) # just gives a tuple
 
 def materials(mu1,mu2,mu0,eps1,eps2,eps0,mesh):
-#Material properties for the BACKGROUND
     mur = {"ominus" : mu1 , "oplus" : mu2 , "olayer" : mu0 , "air" : 1, "pml" : 1 }
     nu = CoefficientFunction ([ 1/(mur[mat]) for mat in mesh.GetMaterials() ])
 
@@ -21,8 +20,8 @@ def Nitsches_transmission(alpha_pml,Rpml,nu,eps,k,mu2,nv,mesh,V,gamma,hmax,uext,
     # u and v refer to trial and test-functions in the definition of forms below
     SetPMLParameters(rad=Rpml,alpha=alpha_pml)
     a = BilinearForm(V, symmetric=True, flags={"printelmat":True})
-    a.components[0] += BFI("PML_curlcurledge",coef=nu)
-    a.components[0] += BFI("PML_massedge",coef=-k*k*eps)
+    a.components[0] += BFI("PML_curlcurledge",coef=1)
+    a.components[0] += BFI("PML_massedge",coef=-k*k)
     a += SymbolicBFI(nu*curl(uplus)*curl(vplus)   - k*k*eps*uplus*vplus)
 
 
