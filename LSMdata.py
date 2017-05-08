@@ -102,7 +102,6 @@ nopml = CoefficientFunction ([0 if mat=='pml' else 1 for mat in mesh.GetMaterial
 np=0
 fff=open(data_dir+'/FFP.txt','w')
 print(k,file=fff)
-print(eps0,file=fff)
 print(delta,file=fff)
 collection='interface'
 rhs=open(data_dir+'/RHS.txt','w')
