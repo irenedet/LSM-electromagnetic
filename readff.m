@@ -26,7 +26,6 @@ end
 fidff=fopen('FFP.txt','r');
 FFmat=cell(nb,2);%FF matrices
 ka=fscanf(fidff,'%f \n1',1)%wave number
-eps0=fscanf(fidff,'%f \n1',1)%epsilon in the thin layer
 delta=fscanf(fidff,'%f \n1',1)%thickness of thin layer
 indexes = zeros(2,nb);
 
