@@ -1,10 +1,11 @@
-function [SSpoints,Nsample,RHSmat]=readrhs(plt,nb)
+function [SSpoints,Nsample,RHSmat]=readrhs(plt,nb,data_folder)
 
-
-fidrhs=fopen('RHS.txt','r');
+rhs_file = strcat(data_folder,'/RHS.txt');
+Spoints_file = strcat(data_folder,'/Spoints.txt');
+fidrhs=fopen(rhs_file,'r');
 Nsample=fscanf(fidrhs,'%f \n1',1)%number of samling points
 RHSmat=cell(nb,2);%FF matrices
-fidsp=fopen('Spoints.txt','r');
+fidsp=fopen(Spoints_file,'r');
 SSpoints=zeros(3,Nsample);
 for sp=1:Nsample
     SSpoints(:,sp)=fscanf(fidsp,'%f %f %f\n',3);
