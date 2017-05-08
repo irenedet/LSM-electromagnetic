@@ -1,6 +1,10 @@
-function [Points,npoints,tris,ntris,indexes,dv,pv,nb,ka,FFmat]=readff(plt)
+function [Points,npoints,tris,ntris,indexes,dv,pv,nb,ka,FFmat]=...
+    readff(plt,data_folder)
 
-fidm=fopen('ffmesh.msh');
+ffmesh_file= strcat(data_folder, '/ffmesh.msh');
+FFP_file = strcat(data_folder,'/FFP.txt')
+
+fidm=fopen(ffmesh_file);
 npoints=fscanf(fidm,'%i\n',1);
 Points=fscanf(fidm,'%g %g %g\n',[3, npoints]);
 nb=0;
@@ -23,7 +27,7 @@ if plt~=1
     pltsphere(Points,npoints,tris,ntris)
 end
 
-fidff=fopen('FFP.txt','r');
+fidff=fopen(FFP_file,'r');
 FFmat=cell(nb,2);%FF matrices
 ka=fscanf(fidff,'%f \n1',1)%wave number
 eps0=fscanf(fidff,'%f \n1',1)%epsilon in the thin layer
