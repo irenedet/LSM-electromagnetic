@@ -49,35 +49,55 @@ def NitschesPlaneWaveSource(k,dv,pv,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus):
     
     return f,Einext
 
-def Sample_Points(ngmesh,mesh,data_dir,Rminus):
+def Sample_Points(ngmesh,mesh,data_dir,Rminus,geom):
     #Sampling points for the LSM
-    SampleP=ngmesh.Points()
+    #SampleP=ngmesh.Points()
     SSpoints=[]# mip points where to evaluate the background sols
     SSpointsp=[]# simple list of sampling points
     spfile=open(data_dir+'/Spoints.txt','w')
-
-    for p in SampleP:
-        zsamp = p.p
-        if(zsamp[0]*zsamp[0]==Rminus*Rminus)&(zsamp[1]*zsamp[1]<=Rminus*Rminus)&(zsamp[2]*zsamp[2]<=Rminus*Rminus):
-            if (zsamp not in SSpointsp):
-                SSpointsp.append(zsamp)
-                mip=mesh(zsamp[0],zsamp[1],zsamp[2])
-                SSpoints.append(mip)
-                print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
-        if(zsamp[0]*zsamp[0]<=Rminus*Rminus)&(zsamp[1]*zsamp[1]==Rminus*Rminus)&(zsamp[2]*zsamp[2]<=Rminus*Rminus):
-            if (zsamp not in SSpointsp):
-                SSpointsp.append(zsamp)
-                mip=mesh(zsamp[0],zsamp[1],zsamp[2])
-                SSpoints.append(mip)
-                print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
-        if(zsamp[0]*zsamp[0]<=Rminus*Rminus)&(zsamp[1]*zsamp[1]<=Rminus*Rminus)&(zsamp[2]*zsamp[2]==Rminus*Rminus):
-            if (zsamp not in SSpointsp):
-                SSpointsp.append(zsamp)
-                mip=mesh(zsamp[0],zsamp[1],zsamp[2])
-                SSpoints.append(mip)
-                print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
+    if (geom == 1):
+        for p in ngmesh.Points():
+            zsamp = p.p
+            if(zsamp[0]*zsamp[0]==Rminus*Rminus)&(zsamp[1]*zsamp[1]<=Rminus*Rminus)&(zsamp[2]*zsamp[2]<=Rminus*Rminus):
+                if (zsamp not in SSpointsp):
+                    SSpointsp.append(zsamp)
+                    mip=mesh(zsamp[0],zsamp[1],zsamp[2])
+                    SSpoints.append(mip)
+                    print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
+            if(zsamp[0]*zsamp[0]<=Rminus*Rminus)&(zsamp[1]*zsamp[1]==Rminus*Rminus)&(zsamp[2]*zsamp[2]<=Rminus*Rminus):
+                if (zsamp not in SSpointsp):
+                    SSpointsp.append(zsamp)
+                    mip=mesh(zsamp[0],zsamp[1],zsamp[2])
+                    SSpoints.append(mip)
+                    print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
+            if(zsamp[0]*zsamp[0]<=Rminus*Rminus)&(zsamp[1]*zsamp[1]<=Rminus*Rminus)&(zsamp[2]*zsamp[2]==Rminus*Rminus):
+                if (zsamp not in SSpointsp):
+                    SSpointsp.append(zsamp)
+                    mip=mesh(zsamp[0],zsamp[1],zsamp[2])
+                    SSpoints.append(mip)
+                    print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
     Nsample = len(SSpoints)
     spfile.close()
+    if (geom == 4):
+        for p in SampleP:
+            zsamp = p.p
+            if(zsamp[0]*zsamp[0]+zsamp[1]*zsamp[1]<=Rminus*Rminus)&(zsamp[2]==0):
+                if (zsamp not in SSpointsp):
+                    SSpointsp.append(zsamp)
+                    mip=mesh(zsamp[0],zsamp[1],zsamp[2])
+                    SSpoints.append(mip)
+                    print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
+            if((zsamp[0]*zsamp[0]+zsamp[1]*zsamp[1]+zsamp[2]*zsamp[2])==Rminus*Rminus)&(zsamp[2]<0):
+                if (zsamp not in SSpointsp):
+                    SSpointsp.append(zsamp)
+                    mip=mesh(zsamp[0],zsamp[1],zsamp[2])
+                    SSpoints.append(mip)
+                    print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
+    Nsample = len(SSpoints)
+    spfile.close()
+    
+    if (geom == 3)|(geom == 2):
+        print('The Sample_Points function has to be defined for this geometry')
     return Nsample,SSpoints,SSpointsp
 
 def Get_polarizations1(dv):
