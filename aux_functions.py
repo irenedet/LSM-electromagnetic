@@ -79,7 +79,7 @@ def Sample_Points(ngmesh,mesh,data_dir,Rminus,geom):
     Nsample = len(SSpoints)
     spfile.close()
     if (geom == 4):
-        for p in SampleP:
+        for p in ngmesh.Points():
             zsamp = p.p
             if(zsamp[0]*zsamp[0]+zsamp[1]*zsamp[1]<=Rminus*Rminus)&(zsamp[2]==0):
                 if (zsamp not in SSpointsp):
