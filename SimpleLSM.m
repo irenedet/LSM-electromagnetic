@@ -1,10 +1,10 @@
 %
 % Simple LSM with Ridge regression
 %
-%clear all
-%close all
+clear all
+close all
 % Read data from FFP.txt to build prediction matrix
-data_folder = 'Data_3.0_3'
+data_folder = '/Users/irene/Dropbox/LSM-data/Data_3.0_imag';
 [Points,npoints,tris,ntris,indexes,dv,pv,nb,ka,FFmat]=...
     readff(1,data_folder);
 
@@ -35,23 +35,25 @@ for m=1:nb
         A(nb+l,nb+m)=pv(:,2*l)'*FF2(:,l);%M_phiphi
     end
 end
-disp(['The prediction matrix A has been assembled.'])
-%% 1.
-disp(['cond(A)=',num2str(cond(A))])
+disp(['A has been assembled, and cond(A)=',num2str(cond(A))])
 %% 2. Noise matrix (to avoid numerical crimes and account for measurement errors)
-eps_noise=0.0001;
+eps_noise=0.00001;
 Noise_mat=eps_noise*(-eye(size(A))+2*rand(size(A)));% uniform random noise
 Anoisy=A+Noise_mat;
 noise=norm(Noise_mat)/norm(A);
 disp(['The level of noise in this experiment is: ',num2str(100*noise),'%'])
-A=Anoisy;
-%% 3. Assemble right-hand-side 
+prompt = 'Do you want to continue wih this level of noise? (y/n): ';
+str = input(prompt,'s');
+if (str == 'y')
+    A=Anoisy;
+end
+%% 3. Assemble right-hand-side
 [SSpoints,Nsample,RHSmat]=readrhs(1,nb,data_folder);
 disp(['Using ',num2str(Nsample),' sampling points in each direction'])
 xx=SSpoints(1,:);
 yy=SSpoints(2,:);
 zz=SSpoints(3,:);
-scatter3(xx,yy,zz,'*')
+%scatter3(xx,yy,zz,'*')
 g=zeros(Nsample,1);
 % Simple fixed Tikhonov parameter suitable for Stekloff problem
 alpha=1.e-8;
@@ -80,8 +82,11 @@ for j=1:Nsample
     end
 end
 
-S=5*ones(1,Nsample);
+
 figure
+hold on
+S=5*ones(1,Nsample);
+scatter3(xx,yy,zz,S,indicator');
 s=1.2;
 x=[0 1 1 0 0 0;1 1 0 0 1 1;1 1 0 0 1 1;0 1 1 0 0 0]*s;
 y=[0 0 1 1 0 0;0 1 1 0 0 0;0 1 1 0 1 1;0 0 1 1 1 1]*s;
@@ -90,10 +95,7 @@ for i=1:6
     h=patch(x(:,i)-0.6,y(:,i)-0.6,z(:,i)-0.6,'k');
     set(h,'edgecolor','b','FaceColor',[.1,.1,.3])
 end
-hold on
-scatter3(xx,yy,zz,S,indicator');
-%% Plotting the delamination (defective points)
-%h=patch(x(:,i),y(:,i),z(:,i),'k')
+%% 4. Plotting the delamination (defective points)
 figure
 s=1.2;
 x=[0 1 1 0 0 0;1 1 0 0 1 1;1 1 0 0 1 1;0 1 1 0 0 0]*s;
@@ -121,24 +123,22 @@ hold on
 % scatter3(Sidey2(1,:),Sidey2(2,:),Sidey2(3,:),'black');
 % scatter3(Sidez1(1,:),Sidez1(2,:),Sidez1(3,:),'black');
 % scatter3(Sidez2(1,:),Sidez2(2,:),Sidez2(3,:),'black');
-ginvx1=zeros(size(Sidex1));ginvx1(1,:)=50*ginv(sidex1);Ginvx1=Sidex1+ginvx1;
-ginvx2=zeros(size(Sidex2));ginvx2(1,:)=50*ginv(sidex2);Ginvx2=Sidex2-ginvx2;
-ginvy1=zeros(size(Sidey1));ginvy1(2,:)=50*ginv(sidey1);Ginvy1=Sidey1+ginvy1;
-ginvy2=zeros(size(Sidey2));ginvy2(2,:)=50*ginv(sidey2);Ginvy2=Sidey2-ginvy2;
-ginvz1=zeros(size(Sidez1));ginvz1(3,:)=50*ginv(sidez1);Ginvz1=Sidez1+ginvz1;
-ginvz2=zeros(size(Sidez2));ginvz2(3,:)=50*ginv(sidez2);Ginvz2=Sidez2-ginvz2;
+xi=30 %amplitude
+func=ginv;
+ginvx1=zeros(size(Sidex1));ginvx1(1,:)=xi*func(sidex1);Ginvx1=Sidex1+ginvx1;
+ginvx2=zeros(size(Sidex2));ginvx2(1,:)=xi*func(sidex2);Ginvx2=Sidex2-ginvx2;
+ginvy1=zeros(size(Sidey1));ginvy1(2,:)=xi*func(sidey1);Ginvy1=Sidey1+ginvy1;
+ginvy2=zeros(size(Sidey2));ginvy2(2,:)=xi*func(sidey2);Ginvy2=Sidey2-ginvy2;
+ginvz1=zeros(size(Sidez1));ginvz1(3,:)=xi*func(sidez1);Ginvz1=Sidez1+ginvz1;
+ginvz2=zeros(size(Sidez2));ginvz2(3,:)=xi*func(sidez2);Ginvz2=Sidez2-ginvz2;
 scatter3(Ginvx1(1,:),Ginvx1(2,:),Ginvx1(3,:),S(1:length(Ginvx1)),'b');
 scatter3(Ginvx2(1,:),Ginvx2(2,:),Ginvx2(3,:),S(1:length(Ginvx2)),'b');
 scatter3(Ginvy1(1,:),Ginvy1(2,:),Ginvy1(3,:),S(1:length(Ginvy1)),'b');
 scatter3(Ginvy2(1,:),Ginvy2(2,:),Ginvy2(3,:),S(1:length(Ginvy2)),'b');
 scatter3(Ginvz1(1,:),Ginvz1(2,:),Ginvz1(3,:),S(1:length(Ginvz1)),'red');
 scatter3(Ginvz2(1,:),Ginvz2(2,:),Ginvz2(3,:),S(1:length(Ginvz2)),'b');
-%% Prueba
-%figure
-%surface(Ginvz1(1,:),Ginvz1(2,:),Ginvz1(3,:),'red');
 x = Ginvz1(1,:);
 y = Ginvz1(2,:);
-%z = 0.6*ones(length(Ginvz1(3,:)));
 v = Ginvz1(3,:);
 d = -0.6:0.05:0.6;
 [xq,yq] = meshgrid(d,d);
@@ -155,59 +155,3 @@ for i=1:6
     h=patch(x(:,i)-0.6,y(:,i)-0.6,z(:,i)-0.6,'k');
     set(h,'edgecolor','b','FaceColor',[.1,.1,.3])
 end
-%% !!!!
-% Lots of test points
-nxx=41;
-%lsnxx=21
-disp(['Using ',num2str(nxx),' sampling points in each direction'])
-xx=linspace(-1.5,1.5,nxx);
-[zX,zY,zZ]=meshgrid(xx,xx,xx);
-zX=reshape(zX,nxx^3,1,1);
-zY=reshape(zY,nxx^3,1,1);
-zZ=reshape(zZ,nxx^3,1,1);
-g=zeros(nxx^3,1);
-% Simple fixed Tikhonov parameter suitable for Stekloff problem
-alpha=1.e-8;
-disp(['Tikhonov parameter: ',num2str(alpha)])
-
-% ball=zeros(2*nb,3);    
-ball=zeros(2*nb,2);
-for j=1:length(zX)
-    if mod(j,nxx*nxx)==0, disp(['Done ',num2str(j), ' of ',num2str(length(zX))]),end
-    z=[zX(j);zY(j);zZ(j)];
-    for iq=1:3
-        q=[0;0;0];
-        q(iq)=1;
-        for l=1:nb
-            vec=cross(dv(:,2*l-1),cross(q,dv(:,2*l-1)));%this has to be changed for non-homogeneous background!
-            b(l)=1i*ka*(pv(:,2*l-1)'*vec)*exp(-1i*ka*(dv(:,2*l-1)'*z));
-            vec=cross(dv(:,2*l),cross(q,dv(:,2*l)));
-            b(l+nb)=1i*ka*(pv(:,2*l)'*vec)*exp(-1i*ka*(dv(:,2*l)'*z));
-        end
-        ball(:,iq)=b;
-    end
-    % Solves for three polarizations of artificial source at once
-    g3=(A'*A+alpha*eye(size(A)))\(A'*ball);
-    ginv(j)=1/norm(g3(:,1))+1/norm(g3(:,2))+1/norm(g3(:,3));
-end
-ginv=reshape(ginv,nxx,nxx,nxx);
-zX=reshape(zX,nxx,nxx,nxx);
-zY=reshape(zY,nxx,nxx,nxx);
-zZ=reshape(zZ,nxx,nxx,nxx);
-%% 4.
-level = 0.4;
-figure
-slice(zX,zY,zZ,ginv,0,0,0)
-%figure
-hold on
-s=1.2;
-x=[0 1 1 0 0 0;1 1 0 0 1 1;1 1 0 0 1 1;0 1 1 0 0 0]*s;
-y=[0 0 1 1 0 0;0 1 1 0 0 0;0 1 1 0 1 1;0 0 1 1 1 1]*s;
-z=[0 0 0 0 0 1;0 0 0 0 0 1;1 1 1 1 0 1;1 1 1 1 0 1]*s;
-for i=1:6
-    h=patch(x(:,i)-0.6,y(:,i)-0.6,z(:,i)-0.6,'k');
-    set(h,'edgecolor','b','FaceColor',[1,1,1])
-end
-hold on
-isosurface(zX,zY,zZ,ginv,level*(max(max(max(ginv)))-min(min(min(ginv))))+min(min(min(ginv))))
-hold off
