@@ -3,7 +3,7 @@ from ngsolve import *
 from ngsolve.internal import *
 from netgen.meshing import SetTestoutFile
 from ffcode import ExportFFMesh, SetupFFMesh, findffvec
-from mygeometry_1 import brick_geometry, sphere_geometry
+from mygeometry_1 import *
 from aux_functions import *
 import os
 
@@ -15,11 +15,12 @@ from parameters import *
 ################################################################################################################
 if geom == 1:
     geometry = brick_geometry(Rminus, Rplus, Rext, Rpml, delta, hsample, hmax)
-    ngmesh = geometry.GenerateMesh()
+    with TaskManager():
+        ngmesh = geometry.GenerateMesh()
 
 if geom == 2:
     geometry = sphere_geometry(Rminus, Rplus, Rext, Rpml, Rother, c, delta, hsample, hmax)
-    ngmesh = MakeGeometry.GenerateMesh(maxh=hmax)
+    ngmesh = geometry.GenerateMesh(maxh=hmax)
     
     # This is for the boundary layer
     # 4 = number of boundary conditions:
@@ -33,10 +34,21 @@ if geom == 2:
         print("Material: ",ngmesh.GetMaterial(i))
         if ngmesh.GetMaterial(i) == "oplus":
             crackDomIndex = i+1
-    ngmesh = MakeGeometry().GenerateMesh(maxh=hmax)
+    ngmesh = geometry().GenerateMesh(maxh=hmax)
         
     # create boundary layer with: surface index, thickness, index of domain into which the layer will go, new material name of layer
-    ngmesh.BoundaryLayer(crackIndex,delta,crackDomIndex,"olayer")
+    with TaskManager():
+        ngmesh.BoundaryLayer(crackIndex,delta,crackDomIndex,"olayer")
+
+if geom == 3:
+    geometry = irreg_geometry(Rminus, Rplus, Rext, Rpml, delta, hsample, hmax)
+    with TaskManager():
+        ngmesh = geometry.GenerateMesh(maxh=hmax)
+
+if geom == 4:
+    geometry = half_sphere(Rminus, Rplus, Rext, Rpml, delta, hsample, hmax)
+    with TaskManager():
+        ngmesh = geometry.GenerateMesh()
 
 mesh = Mesh(ngmesh)
 print(mesh.GetBoundaries())
@@ -89,7 +101,7 @@ FFP,bfaces,FFpoints = SetupFFMesh(ffnetgenMesh)
 ExportFFMesh(FFP,bfaces,data_dir+'/ffmesh.msh')
 ffnetgenMesh.Save(data_dir+'/ffmesh.vol') # save for imepdance calculation
 ## Set sampling points for the LSM
-Nsample,SSpoints,SSpointsp = Sample_Points(ngmesh,mesh,data_dir,Rminus) 
+Nsample,SSpoints,SSpointsp = Sample_Points(ngmesh,mesh,data_dir,Rminus,geom) 
 
 #Cross product
 Cross = lambda u,v: CoefficientFunction((u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])) # cross product
