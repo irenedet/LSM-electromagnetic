@@ -54,8 +54,8 @@ def Sample_Points(ngmesh,mesh,data_dir,Rminus,geom):
     #SampleP=ngmesh.Points()
     SSpoints=[]# mip points where to evaluate the background sols
     SSpointsp=[]# simple list of sampling points
-    spfile=open(data_dir+'/Spoints.txt','w')
     if (geom == 1):
+        spfile=open(data_dir+'/Spoints.txt','w')
         for p in ngmesh.Points():
             zsamp = p.p
             if(zsamp[0]*zsamp[0]==Rminus*Rminus)&(zsamp[1]*zsamp[1]<=Rminus*Rminus)&(zsamp[2]*zsamp[2]<=Rminus*Rminus):
@@ -76,9 +76,10 @@ def Sample_Points(ngmesh,mesh,data_dir,Rminus,geom):
                     mip=mesh(zsamp[0],zsamp[1],zsamp[2])
                     SSpoints.append(mip)
                     print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
-    Nsample = len(SSpoints)
-    spfile.close()
+        Nsample = len(SSpoints)
+        spfile.close()
     if (geom == 4):
+        spfile=open(data_dir+'/Spoints.txt','w')
         for p in ngmesh.Points():
             zsamp = p.p
             if(zsamp[0]*zsamp[0]+zsamp[1]*zsamp[1]<=Rminus*Rminus)&(zsamp[2]==0):
@@ -93,8 +94,8 @@ def Sample_Points(ngmesh,mesh,data_dir,Rminus,geom):
                     mip=mesh(zsamp[0],zsamp[1],zsamp[2])
                     SSpoints.append(mip)
                     print(zsamp[0],zsamp[1],zsamp[2],file=spfile)
-    Nsample = len(SSpoints)
-    spfile.close()
+        Nsample = len(SSpoints)
+        spfile.close()
     
     if (geom == 3)|(geom == 2):
         print('The Sample_Points function has to be defined for this geometry')
