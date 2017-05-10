@@ -31,7 +31,8 @@ def Nitsches_transmission(alpha_pml,Rpml,nu,eps,k,mu2,nv,mesh,V,gamma,hmax,uext,
     a += SymbolicBFI( gamma/hmax*k* (uext.Trace() - uplus.Trace()) * (vext.Trace() - vplus.Trace()),BND,definedon=mesh.Boundaries("interface"))
     with TaskManager():
         a.Assemble()
-    return a
+        Minv = a.mat.Inverse(V.FreeDofs(),inverse='pardiso')
+    return a, Minv
 
 def NitschesPlaneWaveSource(k,dv,pv,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus):
     #Incident field

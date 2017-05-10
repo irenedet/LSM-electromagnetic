@@ -81,8 +81,8 @@ nu_l, eps_l = materials(mu1,mu2,mu0,eps1,eps2,eps0,mesh) #Defective media materi
 
 
 # FEM Matrices
-a_b = Nitsches_transmission(alpha_pml,Rpml,nu_b,eps_b,k,mu2,nv,mesh,V,gamma,hmax,uext,uplus,vext,vplus) #Background domain
-a_l = Nitsches_transmission(alpha_pml,Rpml,nu_l,eps_l,k,mu2,nv,mesh,V,gamma,hmax,uext,uplus,vext,vplus) #Defective domain
+a_b, Minv_b = Nitsches_transmission(alpha_pml,Rpml,nu_b,eps_b,k,mu2,nv,mesh,V,gamma,hmax,uext,uplus,vext,vplus) #Background domain
+a_l, Minv_l = Nitsches_transmission(alpha_pml,Rpml,nu_l,eps_l,k,mu2,nv,mesh,V,gamma,hmax,uext,uplus,vext,vplus) #Defective domain
 
 #################################################################################################################
 #    Data for the LSM (Linear Sampling Method) : Far-field data and right-hand-side computation
@@ -146,12 +146,12 @@ for d_direc in FFP:
         fm1, Einextm1 = NitschesPlaneWaveSource(k,dvm,pv1,nv,mesh,Vext,V,gamma,hmax,mu2,vext,vplus)
         # Define solution functions
         with TaskManager():
-            u_b0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f0.vec
-            u_l0.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f0.vec
-            u_rhs0.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm0.vec
-            u_b1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * f1.vec
-            u_l1.vec.data += a_l.mat.Inverse(V.FreeDofs()) * f1.vec
-            u_rhs1.vec.data += a_b.mat.Inverse(V.FreeDofs()) * fm1.vec
+            u_b0.vec.data += Minv_b * f0.vec
+            u_l0.vec.data += Minv_l * f0.vec
+            u_rhs0.vec.data += Minv_b * fm0.vec
+            u_b1.vec.data += Minv_b * f1.vec
+            u_l1.vec.data += Minv_l * f1.vec
+            u_rhs1.vec.data += Minv_b * fm1.vec
         # Scattered field for the defect alone - To construct the FF operator in the LSM method
         Es0.Set(u_l0.components[0]-u_b0.components[0])     
         Es1.Set(u_l1.components[0]-u_b1.components[0])
